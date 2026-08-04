@@ -49,6 +49,32 @@ export class ItemSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class OrderItemSchema extends BaseModel {
+  static $columns = ['amount', 'id', 'itemId', 'orderId'] as const
+  $columns = OrderItemSchema.$columns
+  @column()
+  declare amount: number
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare itemId: string
+  @column()
+  declare orderId: string
+}
+
+export class OrderSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'updatedAt', 'userId'] as const
+  $columns = OrderSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: string
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'id', 'name', 'password', 'phoneNumber', 'updatedAt'] as const
   $columns = UserSchema.$columns

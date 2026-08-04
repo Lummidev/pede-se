@@ -60,6 +60,36 @@ const routes = {
     tokens: [{"old":"/api/v1/items/:id","type":0,"val":"api","end":""},{"old":"/api/v1/items/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/items/:id","type":0,"val":"items","end":""},{"old":"/api/v1/items/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['items.destroy']['types'],
   },
+  'orders.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/orders',
+    tokens: [{"old":"/api/v1/orders","type":0,"val":"api","end":""},{"old":"/api/v1/orders","type":0,"val":"v1","end":""},{"old":"/api/v1/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['orders.index']['types'],
+  },
+  'orders.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/orders/:id',
+    tokens: [{"old":"/api/v1/orders/:id","type":0,"val":"api","end":""},{"old":"/api/v1/orders/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/orders/:id","type":0,"val":"orders","end":""},{"old":"/api/v1/orders/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['orders.show']['types'],
+  },
+  'orders.store': {
+    methods: ["POST"],
+    pattern: '/api/v1/orders',
+    tokens: [{"old":"/api/v1/orders","type":0,"val":"api","end":""},{"old":"/api/v1/orders","type":0,"val":"v1","end":""},{"old":"/api/v1/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['orders.store']['types'],
+  },
+  'orders.update': {
+    methods: ["PUT"],
+    pattern: '/api/v1/orders/:id',
+    tokens: [{"old":"/api/v1/orders/:id","type":0,"val":"api","end":""},{"old":"/api/v1/orders/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/orders/:id","type":0,"val":"orders","end":""},{"old":"/api/v1/orders/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['orders.update']['types'],
+  },
+  'orders.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/orders/:id',
+    tokens: [{"old":"/api/v1/orders/:id","type":0,"val":"api","end":""},{"old":"/api/v1/orders/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/orders/:id","type":0,"val":"orders","end":""},{"old":"/api/v1/orders/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['orders.destroy']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

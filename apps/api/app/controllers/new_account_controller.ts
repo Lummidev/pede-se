@@ -5,9 +5,9 @@ import UserTransformer from '#transformers/user_transformer'
 
 export default class NewAccountController {
   async store({ request, serialize }: HttpContext) {
-    const { name, email, password } = await request.validateUsing(signupValidator)
+    const { name, email, password, phoneNumber } = await request.validateUsing(signupValidator)
 
-    const user = await User.create({ name, email, password })
+    const user = await User.create({ name, email, password, phoneNumber })
     const token = await User.accessTokens.create(user)
 
     return serialize({
