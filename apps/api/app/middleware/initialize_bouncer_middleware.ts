@@ -1,4 +1,4 @@
-import * as abilities from '#abilities/main'
+// import * as abilities from '#abilities/main'
 import { policies } from '#generated/policies'
 
 import { Bouncer } from '@adonisjs/bouncer'
@@ -17,7 +17,7 @@ export default class InitializeBouncerMiddleware {
      */
     ctx.bouncer = new Bouncer(
       () => ctx.auth.user || null,
-      abilities,
+      undefined,
       policies
     ).setContainerResolver(ctx.containerResolver)
 
@@ -36,7 +36,8 @@ declare module '@adonisjs/core/http' {
   export interface HttpContext {
     bouncer: Bouncer<
       Exclude<HttpContext['auth']['user'], undefined>,
-      typeof abilities,
+      //typeof abilities,
+      undefined,
       typeof policies
     >
   }

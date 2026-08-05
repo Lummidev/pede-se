@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -28,7 +29,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "../api/**/*.ts",
+    "../api/.adonisjs/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "../api/build", "../api/node_modules"]
 }
