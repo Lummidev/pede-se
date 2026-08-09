@@ -1,6 +1,6 @@
 import { registry } from '@pede-se/api/registry'
 import { createTuyau } from '@tuyau/core/client'
-export const client = createTuyau({
+export const apiClient = createTuyau({
   baseUrl: process.env.PEDE_SE_API_URL || 'http://localhost:3333',
   registry,
   headers: { Accept: 'application/json' },

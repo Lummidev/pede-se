@@ -75,6 +75,25 @@ export class OrderSchema extends BaseModel {
   declare userId: string
 }
 
+export class SettingSchema extends BaseModel {
+  static $columns = ['contactInfo', 'createdAt', 'currency', 'id', 'storeName', 'updatedAt', 'welcomeMessage'] as const
+  $columns = SettingSchema.$columns
+  @column()
+  declare contactInfo: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare storeName: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare welcomeMessage: string | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'id', 'name', 'password', 'phoneNumber', 'updatedAt'] as const
   $columns = UserSchema.$columns

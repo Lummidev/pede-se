@@ -16,12 +16,12 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+    },
   },
   "include": [
     "next-env.d.ts",
@@ -31,7 +31,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "../api/**/*.ts",
-    "../api/.adonisjs/**/*.ts"
+    "../api/.adonisjs/**/*.ts",
   ],
-  "exclude": ["node_modules", "../api/build", "../api/node_modules"]
+  "exclude": ["node_modules", "../api/build", "../api/node_modules", "../api/tests", "../api/bin"],
 }

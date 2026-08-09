@@ -33,5 +33,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   PG_DB_NAME: Env.schema.string(),
 
-  PG_PASSWORD: Env.schema.string()
+  PG_PASSWORD: Env.schema.string(),
+
+  DELAY_SECONDS: Env.schema.number.optional(),
 })
