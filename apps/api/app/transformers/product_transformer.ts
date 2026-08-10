@@ -1,13 +1,13 @@
 import { BaseTransformer } from '@adonisjs/core/transformers'
-import type Item from '#models/item'
+import type Product from '#models/product'
 
-export default class ItemTransformer extends BaseTransformer<Item> {
+export default class ProductTransformer extends BaseTransformer<Product> {
   toObject() {
     return {
       ...this.pick(this.resource, ['id', 'name', 'priceCents']),
     }
   }
-  forItemPage() {
+  forProductPage() {
     return {
       ...this.toObject(),
       ...this.pick(this.resource, ['description', 'createdAt', 'updatedAt']),

@@ -4,11 +4,11 @@ export const OrderPagingQueryStringValidator = vine.create({
   page: vine.number().withoutDecimals().positive().optional(),
 })
 export const OrderValidator = vine.create({
-  items: vine
+  products: vine
     .array(
       vine.object({
         amount: vine.number().positive(),
-        id: vine.string().uuid().exists({ table: 'items', column: 'id' }),
+        id: vine.string().uuid().exists({ table: 'products', column: 'id' }),
       })
     )
     .minLength(1)

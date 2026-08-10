@@ -2,7 +2,7 @@ import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
   protected orderTableName = 'orders'
-  protected pivotTableName = 'order_items'
+  protected pivotTableName = 'order_products'
 
   async up() {
     this.schema.createTable(this.orderTableName, (table) => {
@@ -19,8 +19,13 @@ export default class extends BaseSchema {
         .references('id')
         .inTable(this.orderTableName)
         .onDelete('CASCADE')
-      table.uuid('item_id').notNullable().references('id').inTable('items').onDelete('CASCADE')
-      table.unique(['order_id', 'item_id'])
+      table
+        .uuid('product_id')
+        .notNullable()
+        .references('id')
+        .inTable('products')
+        .onDelete('CASCADE')
+      table.unique(['order_id', 'product_id'])
       table.integer('amount').unsigned().notNullable()
     })
   }

@@ -1,6 +1,6 @@
-import Item from '#models/item'
+import Product from '#models/product'
 import Order from '#models/order'
-import OrderItem from '#models/order_item'
+import OrderProduct from '#models/order_product'
 import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
@@ -17,29 +17,29 @@ const createTestUser = async () => {
 
 test.group('Updating orders', (group) => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
-  test('Updates an existing order and add one more item', async ({ client, db }) => {
+  test('Updates an existing order and add one more product', async ({ client, db }) => {
     await testUtils.db().seed()
     const {
       id: orderId,
       user,
-      items: originalOrderItems,
-    } = await Order.query().preload('user').preload('items').firstOrFail()
+      products: originalOrderProducts,
+    } = await Order.query().preload('user').preload('products').firstOrFail()
 
-    const newItem = await Item.create({
-      name: 'New item',
+    const newProduct = await Product.create({
+      name: 'New product',
       priceCents: 10000,
     })
 
     const response = await client
       .visit('orders.update', { id: orderId })
       .json({
-        items: [
-          ...originalOrderItems.map((item) => ({
-            id: item.id,
+        products: [
+          ...originalOrderProducts.map((product) => ({
+            id: product.id,
             amount: 1,
           })),
           {
-            id: newItem.id,
+            id: newProduct.id,
             amount: 3,
           },
         ],
@@ -50,10 +50,10 @@ test.group('Updating orders', (group) => {
 
     response.assertBodyContains({
       data: {
-        items: [
+        products: [
           {
-            id: newItem.id,
-            priceCents: newItem.priceCents,
+            id: newProduct.id,
+            priceCents: newProduct.priceCents,
             pivot: {
               amount: 3,
             },
@@ -61,21 +61,25 @@ test.group('Updating orders', (group) => {
         ],
       },
     })
-    await db.assertHas('order_items', { order_id: orderId, amount: 1 }, originalOrderItems.length)
-    await db.assertHas('order_items', { order_id: orderId, amount: 3 }, 1)
+    await db.assertHas(
+      'order_products',
+      { order_id: orderId, amount: 1 },
+      originalOrderProducts.length
+    )
+    await db.assertHas('order_products', { order_id: orderId, amount: 3 }, 1)
   })
   test('Fail to update order if not authenticated', async ({ client, assert }) => {
     await testUtils.db().seed()
     const order = await Order.query().firstOrFail()
-    const orderItems = await OrderItem.findManyBy({ orderId: order.id })
-    const newItem = await Item.create({
-      name: 'New item',
+    const orderProducts = await OrderProduct.findManyBy({ orderId: order.id })
+    const newProduct = await Product.create({
+      name: 'New product',
       priceCents: 10000,
     })
     const response = await client.visit('orders.update', { id: order.id }).json({
-      items: [
+      products: [
         {
-          id: newItem.id,
+          id: newProduct.id,
           amount: 3,
         },
       ],
@@ -83,25 +87,25 @@ test.group('Updating orders', (group) => {
     response.assertUnauthorized()
     await assertNoModelChange(assert, Order, order)
 
-    for (const orderItem of orderItems) {
-      await assertNoModelChange(assert, OrderItem, orderItem)
+    for (const orderProduct of orderProducts) {
+      await assertNoModelChange(assert, OrderProduct, orderProduct)
     }
   })
-  test('Fail to update order if trying to place duplicate items', async ({ client, assert }) => {
+  test('Fail to update order if trying to place duplicate products', async ({ client, assert }) => {
     await testUtils.db().seed()
-    const order = await Order.query().preload('user').preload('items').firstOrFail()
-    const orderItemsPivot = await OrderItem.findManyBy({ orderId: order.id })
-    const repeatItem = order.items[0]
+    const order = await Order.query().preload('user').preload('products').firstOrFail()
+    const orderProductsPivot = await OrderProduct.findManyBy({ orderId: order.id })
+    const repeatProduct = order.products[0]
     const response = await client
       .visit('orders.update', { id: order.id })
       .json({
-        items: [
-          ...order.items.map((item) => ({
-            id: item.id,
+        products: [
+          ...order.products.map((product) => ({
+            id: product.id,
             amount: 1,
           })),
           {
-            id: repeatItem.id,
+            id: repeatProduct.id,
             amount: 3,
           },
         ],
@@ -111,8 +115,8 @@ test.group('Updating orders', (group) => {
     response.assertUnprocessableEntity()
     await assertNoModelChange(assert, Order, order)
 
-    for (const orderItem of orderItemsPivot) {
-      await assertNoModelChange(assert, OrderItem, orderItem)
+    for (const orderProduct of orderProductsPivot) {
+      await assertNoModelChange(assert, OrderProduct, orderProduct)
     }
   })
   test("Fail to update order if trying to update an order which isn't owned by the logged-in user", async ({
@@ -121,19 +125,19 @@ test.group('Updating orders', (group) => {
   }) => {
     await testUtils.db().seed()
     const order = await Order.query().firstOrFail()
-    const orderItemsPivot = await OrderItem.findManyBy({ orderId: order.id })
+    const orderProductsPivot = await OrderProduct.findManyBy({ orderId: order.id })
 
-    const newItem = await Item.create({
-      name: 'New item',
+    const newProduct = await Product.create({
+      name: 'New product',
       priceCents: 10000,
     })
     const newUser = await createTestUser()
     const response = await client
       .visit('orders.update', { id: order.id })
       .json({
-        items: [
+        products: [
           {
-            id: newItem.id,
+            id: newProduct.id,
             amount: 3,
           },
         ],
@@ -142,8 +146,8 @@ test.group('Updating orders', (group) => {
       .loginAs(newUser)
     response.assertNotFound()
     await assertNoModelChange(assert, Order, order)
-    for (const orderItem of orderItemsPivot) {
-      await assertNoModelChange(assert, OrderItem, orderItem)
+    for (const orderProduct of orderProductsPivot) {
+      await assertNoModelChange(assert, OrderProduct, orderProduct)
     }
   })
 })

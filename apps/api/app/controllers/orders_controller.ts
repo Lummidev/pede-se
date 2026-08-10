@@ -13,30 +13,34 @@ export default class OrdersController {
     const orders = await Order.query()
       .where('userId', user.id)
       .orderBy('created_at', 'desc')
-      .preload('items')
+      .preload('products')
       .preload('user')
       .paginate(page ?? 1, perPage)
     return serialize(OrderTransformer.paginate(orders.all(), orders.getMeta()))
   }
 
   async store({ request, serialize, auth }: HttpContext) {
-    const { items } = await request.validateUsing(OrderValidator)
+    const { products } = await request.validateUsing(OrderValidator)
     const { id: userId } = auth.getUserOrFail()
     const order = await Order.create({ userId })
-    const orderItemMap = new Map(
-      items.map((item) => {
-        const { id: itemId, ...rest } = item
-        return [itemId, { ...rest }]
+    const orderProductMap = new Map(
+      products.map((product) => {
+        const { id: productId, ...rest } = product
+        return [productId, { ...rest }]
       })
     )
-    await order.related('items').sync(Object.fromEntries(orderItemMap))
-    await order.load('items')
+    await order.related('products').sync(Object.fromEntries(orderProductMap))
+    await order.load('products')
     return serialize(OrderTransformer.transform(order))
   }
 
   async show({ params, serialize, bouncer }: HttpContext) {
     const id = params.id
-    const order = await Order.query().preload('items').preload('user').where('id', id).firstOrFail()
+    const order = await Order.query()
+      .preload('products')
+      .preload('user')
+      .where('id', id)
+      .firstOrFail()
     await bouncer.with(OrderPolicy).authorize('view', order)
     return serialize(OrderTransformer.transform(order))
   }
@@ -46,13 +50,13 @@ export default class OrdersController {
     const order = await Order.findOrFail(id)
     await bouncer.with(OrderPolicy).authorize('edit', order)
 
-    const newItems = await request.validateUsing(OrderValidator)
-    const itemRecord: Record<string, { amount: number }> = {}
-    newItems.items.forEach(({ id: itemId, amount }) => {
-      itemRecord[itemId] = { amount }
+    const newProducts = await request.validateUsing(OrderValidator)
+    const productRecord: Record<string, { amount: number }> = {}
+    newProducts.products.forEach(({ id: productId, amount }) => {
+      productRecord[productId] = { amount }
     })
-    await order.related('items').sync(itemRecord)
-    await order.load('items')
+    await order.related('products').sync(productRecord)
+    await order.load('products')
     return serialize(OrderTransformer.transform(order))
   }
 

@@ -36,13 +36,13 @@ router
       .use(middleware.auth())
     router
       .group(() => {
-        router.get('/', [controllers.Items, 'index'])
-        router.get('/:id', [controllers.Items, 'show'])
-        router.post('/', [controllers.Items, 'store'])
-        router.put('/:id', [controllers.Items, 'update'])
-        router.delete('/:id', [controllers.Items, 'destroy'])
+        router.get('/', [controllers.Products, 'index'])
+        router.get('/:id', [controllers.Products, 'show'])
+        router.post('/', [controllers.Products, 'store'])
+        router.put('/:id', [controllers.Products, 'update'])
+        router.delete('/:id', [controllers.Products, 'destroy'])
       })
-      .prefix('items')
+      .prefix('products')
     router
       .group(() => {
         router.get('/', [controllers.Orders, 'index'])

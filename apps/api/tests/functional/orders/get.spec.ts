@@ -1,4 +1,4 @@
-import Item from '#models/item'
+import Product from '#models/product'
 import Order from '#models/order'
 import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
@@ -10,13 +10,13 @@ test.group('Get order', (group) => {
   test('Get an order after creating it', async ({ client }) => {
     await testUtils.db().seed()
     const user = await User.firstOrFail()
-    const item = await Item.firstOrFail()
+    const product = await Product.firstOrFail()
     const storeResponse = await client
       .visit('orders.store')
       .json({
-        items: [
+        products: [
           {
-            id: item.id,
+            id: product.id,
             amount: 2,
           },
         ],
@@ -34,10 +34,10 @@ test.group('Get order', (group) => {
         user: {
           id: user.id,
         },
-        items: [
+        products: [
           {
-            id: item.id,
-            priceCents: item.priceCents,
+            id: product.id,
+            priceCents: product.priceCents,
             pivot: {
               amount: 2,
             },

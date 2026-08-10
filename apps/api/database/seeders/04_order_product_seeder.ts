@@ -1,5 +1,5 @@
-import { OrderItemFactory } from '#database/factories/order_item_factory'
-import Item from '#models/item'
+import { OrderProductFactory } from '#database/factories/order_product_factory'
+import Product from '#models/product'
 import Order from '#models/order'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
@@ -19,14 +19,14 @@ function shuffled<T>(array: Array<T>): Array<T> {
 export default class extends BaseSeeder {
   async run() {
     const orders = await Order.all()
-    const items = await Item.all()
-    if (items.length < 3) return
+    const products = await Product.all()
+    if (products.length < 3) return
     for (const order of orders) {
-      const chosenItems = shuffled(items).slice(0, 3)
-      for (const item of chosenItems) {
-        await OrderItemFactory.merge({
+      const chosenProducts = shuffled(products).slice(0, 3)
+      for (const product of chosenProducts) {
+        await OrderProductFactory.merge({
           orderId: order.id,
-          itemId: item.id,
+          productId: product.id,
         }).create()
       }
     }

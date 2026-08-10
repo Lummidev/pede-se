@@ -1,8 +1,8 @@
 import factory from '@adonisjs/lucid/factories'
-import Item from '#models/item'
+import Product from '#models/product'
 
-export const ItemFactory = factory
-  .define(Item, async ({ faker }) => {
+export const ProductFactory = factory
+  .define(Product, async ({ faker }) => {
     return {
       name: faker.food.dish(),
       description: faker.food.description(),

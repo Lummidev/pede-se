@@ -67,64 +67,64 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/access_tokens_controller').default['destroy']>>>
     }
   }
-  'items.index': {
+  'products.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/v1/items'
+    pattern: '/api/v1/products'
     types: {
       body: {}
       paramsTuple: []
       params: {}
-      query: ExtractQueryForGet<InferInput<(typeof import('#validators/item').ItemPagingQueryStringValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/items_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/items_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/product').productPagingQueryStringValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'items.show': {
+  'products.show': {
     methods: ["GET","HEAD"]
-    pattern: '/api/v1/items/:id'
+    pattern: '/api/v1/products/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/items_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/items_controller').default['show']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['show']>>>
     }
   }
-  'items.store': {
+  'products.store': {
     methods: ["POST"]
-    pattern: '/api/v1/items'
+    pattern: '/api/v1/products'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/item').itemValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/product').productValidator)>>
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#validators/item').itemValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/items_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/items_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: ExtractQuery<InferInput<(typeof import('#validators/product').productValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'items.update': {
+  'products.update': {
     methods: ["PUT"]
-    pattern: '/api/v1/items/:id'
+    pattern: '/api/v1/products/:id'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/item').itemValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/product').productValidator)>>
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/item').itemValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/items_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/items_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+      query: ExtractQuery<InferInput<(typeof import('#validators/product').productValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'items.destroy': {
+  'products.destroy': {
     methods: ["DELETE"]
-    pattern: '/api/v1/items/:id'
+    pattern: '/api/v1/products/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { id: ParamValue }
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/items_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/items_controller').default['destroy']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['destroy']>>>
     }
   }
   'orders.index': {

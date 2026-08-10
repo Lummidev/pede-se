@@ -1,4 +1,4 @@
-import Item from '#models/item'
+import Product from '#models/product'
 import User from '#models/user'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { test } from '@japa/runner'
@@ -14,25 +14,25 @@ const createTestUser = async () => {
 
 test.group('Sending new orders', (group) => {
   group.each.setup(() => testUtils.db().wrapInGlobalTransaction())
-  test('New order with 2 items', async ({ client, db }) => {
+  test('New order with 2 products', async ({ client, db }) => {
     const user = await createTestUser()
-    const [itemA, itemB] = [
-      await Item.create({ name: 'Test item 1', priceCents: 1111 }),
-      await Item.create({ name: 'Test item 2', priceCents: 2222 }),
+    const [productA, productB] = [
+      await Product.create({ name: 'Test product 1', priceCents: 1111 }),
+      await Product.create({ name: 'Test product 2', priceCents: 2222 }),
     ]
-    const itemAAmount = 1
-    const itemBAmount = 2
+    const productAAmount = 1
+    const productBAmount = 2
     const response = await client
       .visit('orders.store')
       .json({
-        items: [
+        products: [
           {
-            id: itemA.id,
-            amount: itemAAmount,
+            id: productA.id,
+            amount: productAAmount,
           },
           {
-            id: itemB.id,
-            amount: itemBAmount,
+            id: productB.id,
+            amount: productBAmount,
           },
         ],
       })
@@ -41,18 +41,18 @@ test.group('Sending new orders', (group) => {
     response.assertOk()
     response.assertBodyContains({
       data: {
-        items: [
+        products: [
           {
-            id: itemA.id,
-            name: itemA.name,
-            priceCents: itemA.priceCents,
-            pivot: { amount: itemAAmount },
+            id: productA.id,
+            name: productA.name,
+            priceCents: productA.priceCents,
+            pivot: { amount: productAAmount },
           },
           {
-            id: itemB.id,
-            name: itemB.name,
-            priceCents: itemB.priceCents,
-            pivot: { amount: itemBAmount },
+            id: productB.id,
+            name: productB.name,
+            priceCents: productB.priceCents,
+            pivot: { amount: productBAmount },
           },
         ],
       },
@@ -61,52 +61,52 @@ test.group('Sending new orders', (group) => {
       data: { id: savedOrderId },
     } = response.body()
     await db.assertHas('orders', { id: savedOrderId, user_id: user.id })
-    await db.assertHas('order_items', { order_id: savedOrderId }, 2)
-    await db.assertHas('order_items', { item_id: itemA.id }, 1)
-    await db.assertHas('order_items', { item_id: itemB.id }, 1)
+    await db.assertHas('order_products', { order_id: savedOrderId }, 2)
+    await db.assertHas('order_products', { product_id: productA.id }, 1)
+    await db.assertHas('order_products', { product_id: productB.id }, 1)
   })
-  test('Fail if order has duplicate items', async ({ client, db }) => {
+  test('Fail if order has duplicate products', async ({ client, db }) => {
     const user = await createTestUser()
-    const [itemA, itemB] = [
-      await Item.create({ name: 'Test item 1 (for duplication test)', priceCents: 1111 }),
-      await Item.create({ name: 'Test item 2', priceCents: 2222 }),
+    const [productA, productB] = [
+      await Product.create({ name: 'Test product 1 (for duplication test)', priceCents: 1111 }),
+      await Product.create({ name: 'Test product 2', priceCents: 2222 }),
     ]
-    const requestItems = [
-      { id: itemA.id, amount: 1 },
-      { id: itemB.id, amount: 2 },
-      { id: itemA.id, amount: 3 },
+    const requestProducts = [
+      { id: productA.id, amount: 1 },
+      { id: productB.id, amount: 2 },
+      { id: productA.id, amount: 3 },
     ]
     const response = await client
       .visit('orders.store')
-      .json({ items: requestItems })
+      .json({ products: requestProducts })
       .withGuard('api')
       .loginAs(user)
     response.assertUnprocessableEntity()
     await db.assertEmpty('orders')
-    await db.assertEmpty('order_items')
+    await db.assertEmpty('order_products')
   })
-  test('Fail if order has no items', async ({ client, db }) => {
+  test('Fail if order has no products', async ({ client, db }) => {
     const user = await createTestUser()
     const response = await client.visit('orders.store').withGuard('api').loginAs(user)
     response.assertUnprocessableEntity()
     await db.assertEmpty('orders')
-    await db.assertEmpty('order_items')
+    await db.assertEmpty('order_products')
   })
-  test('Fail if order has empty items array', async ({ client, db }) => {
+  test('Fail if order has empty products array', async ({ client, db }) => {
     const user = await createTestUser()
     const response = await client
       .visit('orders.store')
-      .json({ items: [] })
+      .json({ products: [] })
       .withGuard('api')
       .loginAs(user)
     response.assertUnprocessableEntity()
     await db.assertEmpty('orders')
-    await db.assertEmpty('order_items')
+    await db.assertEmpty('order_products')
   })
   test('Fail with no authentication', async ({ client, db }) => {
     const response = await client.visit('orders.store')
     response.assertUnauthorized()
     await db.assertEmpty('orders')
-    await db.assertEmpty('order_items')
+    await db.assertEmpty('order_products')
   })
 })

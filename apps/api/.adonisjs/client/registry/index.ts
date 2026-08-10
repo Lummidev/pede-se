@@ -36,35 +36,35 @@ const routes = {
     tokens: [{"old":"/api/v1/account/logout","type":0,"val":"api","end":""},{"old":"/api/v1/account/logout","type":0,"val":"v1","end":""},{"old":"/api/v1/account/logout","type":0,"val":"account","end":""},{"old":"/api/v1/account/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['profile.access_tokens.destroy']['types'],
   },
-  'items.index': {
+  'products.index': {
     methods: ["GET","HEAD"],
-    pattern: '/api/v1/items',
-    tokens: [{"old":"/api/v1/items","type":0,"val":"api","end":""},{"old":"/api/v1/items","type":0,"val":"v1","end":""},{"old":"/api/v1/items","type":0,"val":"items","end":""}],
-    types: placeholder as Registry['items.index']['types'],
+    pattern: '/api/v1/products',
+    tokens: [{"old":"/api/v1/products","type":0,"val":"api","end":""},{"old":"/api/v1/products","type":0,"val":"v1","end":""},{"old":"/api/v1/products","type":0,"val":"products","end":""}],
+    types: placeholder as Registry['products.index']['types'],
   },
-  'items.show': {
+  'products.show': {
     methods: ["GET","HEAD"],
-    pattern: '/api/v1/items/:id',
-    tokens: [{"old":"/api/v1/items/:id","type":0,"val":"api","end":""},{"old":"/api/v1/items/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/items/:id","type":0,"val":"items","end":""},{"old":"/api/v1/items/:id","type":1,"val":"id","end":""}],
-    types: placeholder as Registry['items.show']['types'],
+    pattern: '/api/v1/products/:id',
+    tokens: [{"old":"/api/v1/products/:id","type":0,"val":"api","end":""},{"old":"/api/v1/products/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/products/:id","type":0,"val":"products","end":""},{"old":"/api/v1/products/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['products.show']['types'],
   },
-  'items.store': {
+  'products.store': {
     methods: ["POST"],
-    pattern: '/api/v1/items',
-    tokens: [{"old":"/api/v1/items","type":0,"val":"api","end":""},{"old":"/api/v1/items","type":0,"val":"v1","end":""},{"old":"/api/v1/items","type":0,"val":"items","end":""}],
-    types: placeholder as Registry['items.store']['types'],
+    pattern: '/api/v1/products',
+    tokens: [{"old":"/api/v1/products","type":0,"val":"api","end":""},{"old":"/api/v1/products","type":0,"val":"v1","end":""},{"old":"/api/v1/products","type":0,"val":"products","end":""}],
+    types: placeholder as Registry['products.store']['types'],
   },
-  'items.update': {
+  'products.update': {
     methods: ["PUT"],
-    pattern: '/api/v1/items/:id',
-    tokens: [{"old":"/api/v1/items/:id","type":0,"val":"api","end":""},{"old":"/api/v1/items/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/items/:id","type":0,"val":"items","end":""},{"old":"/api/v1/items/:id","type":1,"val":"id","end":""}],
-    types: placeholder as Registry['items.update']['types'],
+    pattern: '/api/v1/products/:id',
+    tokens: [{"old":"/api/v1/products/:id","type":0,"val":"api","end":""},{"old":"/api/v1/products/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/products/:id","type":0,"val":"products","end":""},{"old":"/api/v1/products/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['products.update']['types'],
   },
-  'items.destroy': {
+  'products.destroy': {
     methods: ["DELETE"],
-    pattern: '/api/v1/items/:id',
-    tokens: [{"old":"/api/v1/items/:id","type":0,"val":"api","end":""},{"old":"/api/v1/items/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/items/:id","type":0,"val":"items","end":""},{"old":"/api/v1/items/:id","type":1,"val":"id","end":""}],
-    types: placeholder as Registry['items.destroy']['types'],
+    pattern: '/api/v1/products/:id',
+    tokens: [{"old":"/api/v1/products/:id","type":0,"val":"api","end":""},{"old":"/api/v1/products/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/products/:id","type":0,"val":"products","end":""},{"old":"/api/v1/products/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['products.destroy']['types'],
   },
   'orders.index': {
     methods: ["GET","HEAD"],

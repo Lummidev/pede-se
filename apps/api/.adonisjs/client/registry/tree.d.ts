@@ -21,12 +21,12 @@ export interface ApiDefinition {
       destroy: typeof routes['profile.access_tokens.destroy']
     }
   }
-  items: {
-    index: typeof routes['items.index']
-    show: typeof routes['items.show']
-    store: typeof routes['items.store']
-    update: typeof routes['items.update']
-    destroy: typeof routes['items.destroy']
+  products: {
+    index: typeof routes['products.index']
+    show: typeof routes['products.show']
+    store: typeof routes['products.store']
+    update: typeof routes['products.update']
+    destroy: typeof routes['products.destroy']
   }
   orders: {
     index: typeof routes['orders.index']

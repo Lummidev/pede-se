@@ -1,8 +1,8 @@
-import { ItemFactory } from '#database/factories/item_factory'
+import { ProductFactory } from '#database/factories/product_factory'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class extends BaseSeeder {
   async run() {
-    await ItemFactory.createMany(10)
+    await ProductFactory.createMany(10)
   }
 }

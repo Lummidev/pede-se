@@ -32,34 +32,17 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
-export class ItemSchema extends BaseModel {
-  static $columns = ['createdAt', 'description', 'id', 'name', 'priceCents', 'updatedAt'] as const
-  $columns = ItemSchema.$columns
-  @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime | null
-  @column()
-  declare description: string | null
-  @column({ isPrimary: true })
-  declare id: string
-  @column()
-  declare name: string
-  @column()
-  declare priceCents: number
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
-}
-
-export class OrderItemSchema extends BaseModel {
-  static $columns = ['amount', 'id', 'itemId', 'orderId'] as const
-  $columns = OrderItemSchema.$columns
+export class OrderProductSchema extends BaseModel {
+  static $columns = ['amount', 'id', 'orderId', 'productId'] as const
+  $columns = OrderProductSchema.$columns
   @column()
   declare amount: number
   @column({ isPrimary: true })
   declare id: string
   @column()
-  declare itemId: string
-  @column()
   declare orderId: string
+  @column()
+  declare productId: string
 }
 
 export class OrderSchema extends BaseModel {
@@ -73,6 +56,23 @@ export class OrderSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare userId: string
+}
+
+export class ProductSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'name', 'priceCents', 'updatedAt'] as const
+  $columns = ProductSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare name: string
+  @column()
+  declare priceCents: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }
 
 export class SettingSchema extends BaseModel {
