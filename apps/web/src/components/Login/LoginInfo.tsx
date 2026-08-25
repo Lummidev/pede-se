@@ -1,12 +1,12 @@
 'use client'
 
-import useLoginPageInfo from '@/hooks/useLoginPageInfo'
+import useStoreInfo from '@/hooks/useStoreInfo'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 
 export function LoginInfo() {
-  const { info, error, isLoading } = useLoginPageInfo()
+  const { info, error, isLoading } = useStoreInfo()
   if (error) return <div>Error: {error.message}</div>
   return (
     <Box>

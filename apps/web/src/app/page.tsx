@@ -1,10 +1,37 @@
+'use client'
 import { LoginForm } from '@/components/Login/LoginForm'
 import { LoginInfo } from '@/components/Login/LoginInfo'
+import { apiClient } from '@/lib/apiClient'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-
-export default function Home() {
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+export default function LoginPage() {
+  const [pendingLogin, setPendingLogin] = useState(false)
+  const router = useRouter()
+  const handleLogin = (target: HTMLFormElement) => {
+    const formData = new FormData(target)
+    const loginData = {
+      body: {
+        email: formData.get('email')?.toString() ?? '',
+        password: formData.get('password')?.toString() ?? '',
+      },
+    }
+    setPendingLogin(true)
+    apiClient.api.auth.accessTokens
+      .store(loginData)
+      .safe()
+      .then(([data, error]) => {
+        if (data) {
+          localStorage.setItem('token', data.data.token)
+          router.push('/home')
+        }
+        if (error) {
+          setPendingLogin(false)
+        }
+      })
+  }
   return (
     <Container
       maxWidth={false}
@@ -38,7 +65,7 @@ export default function Home() {
               width: '100%',
             }}
           >
-            <LoginForm />
+            <LoginForm handleLogin={handleLogin} pendingLogin={pendingLogin} />
           </Box>
         </Grid>
       </Grid>
