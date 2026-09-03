@@ -1,5 +1,5 @@
 'use client'
-import { LoginForm } from '@/components/Login/LoginForm'
+import { LoginFields, LoginForm } from '@/components/Login/LoginForm'
 import { LoginInfo } from '@/components/Login/LoginInfo'
 import { apiClient } from '@/lib/apiClient'
 import { AuthCheck, checkAuth } from '@/lib/auth'
@@ -20,13 +20,9 @@ export default function LoginPage() {
     setShouldShowAuthError(true)
     setAuthErrorKey(errorKey)
   }
-  const handleLogin = (target: HTMLFormElement) => {
-    const formData = new FormData(target)
+  const handleLogin = (fields: LoginFields) => {
     const loginData = {
-      body: {
-        email: formData.get('email')?.toString() ?? '',
-        password: formData.get('password')?.toString() ?? '',
-      },
+      body: fields,
     }
     setPendingLogin(true)
     apiClient.api.auth.accessTokens

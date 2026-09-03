@@ -16,7 +16,6 @@ export const signupValidator = vine.create({
   password: password(),
   passwordConfirmation: password().sameAs('password'),
 })
-
 /**
  * Validator to use before validating user credentials
  * during login
