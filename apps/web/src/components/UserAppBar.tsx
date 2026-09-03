@@ -14,12 +14,14 @@ import Tooltip from '@mui/material/Tooltip'
 import Avatar from '@mui/material/Avatar'
 import MenuBook from '@mui/icons-material/MenuBook'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { apiClient } from '@/lib/apiClient'
+import { clearAuthToken } from '@/lib/auth'
 const pages: { displayName: string; href: string }[] = [
   { displayName: 'Menu', href: '/menu' },
   { displayName: 'Orders', href: '/orders' },
   { displayName: 'Store Settings', href: '/settings' },
 ]
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 export default function UserAppBar() {
   return (
@@ -39,7 +41,54 @@ export default function UserAppBar() {
   )
 }
 
+const logout = () => {
+  apiClient.api.profile.accessTokens
+    .destroy({})
+    .safe()
+    .then(([data, error]) => {
+      if (data) return
+      if (error.kind === 'network') {
+        console.error('Could not log out because of a network error')
+      }
+      if (error.isStatus(422)) {
+      }
+    })
+}
+
 function UserMenu() {
+  const router = useRouter()
+  const logout = () => {
+    apiClient.api.profile.accessTokens
+      .destroy({})
+      .safe()
+      .then(([data, error]) => {
+        if (data) {
+          clearAuthToken()
+          router.push('/')
+          return
+        }
+        if (error.kind === 'network') {
+          console.error('Could not log out because of a network error')
+        }
+        if (error.isStatus(422)) {
+          console.error('Not logged in')
+        }
+      })
+  }
+  const userMenuItems: { id: number; display: string; onClick: () => void }[] = [
+    {
+      id: 1,
+      display: 'Account',
+      onClick: () => {
+        router.push('/Account')
+      },
+    },
+    {
+      id: 2,
+      display: 'Logout',
+      onClick: logout,
+    },
+  ]
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
@@ -72,9 +121,15 @@ function UserMenu() {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
-            <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+        {userMenuItems.map((setting) => (
+          <MenuItem
+            key={setting.id}
+            onClick={() => {
+              handleCloseUserMenu()
+              setting.onClick()
+            }}
+          >
+            <Typography sx={{ textAlign: 'center' }}>{setting.display}</Typography>
           </MenuItem>
         ))}
       </Menu>
