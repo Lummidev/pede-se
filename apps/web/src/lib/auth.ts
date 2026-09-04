@@ -10,7 +10,7 @@ export enum AuthCheck {
   Authenticated,
   Unauthorized,
   InvalidToken,
-  CouldNotCheck,
+  NetworkError,
   UnknownError,
 }
 export const checkAuth = async (): Promise<{ result: AuthCheck; errorData?: TuyauError }> => {
@@ -25,7 +25,7 @@ export const checkAuth = async (): Promise<{ result: AuthCheck; errorData?: Tuya
     clearAuthToken()
     return { result: AuthCheck.InvalidToken }
   }
-  if (error.kind === 'network') return { result: AuthCheck.CouldNotCheck, errorData: error }
+  if (error.kind === 'network') return { result: AuthCheck.NetworkError, errorData: error }
 
   return { result: AuthCheck.UnknownError, errorData: error }
 }

@@ -1,19 +1,17 @@
 'use client'
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import Snackbar from '@mui/material/Snackbar'
-import Alert from '@mui/material/Alert'
 import { SignupFields, SignupForm } from '@/components/Signup/SignupForm'
 import { useState } from 'react'
 import { apiClient } from '@/lib/apiClient'
 import { useRouter } from 'next/navigation'
 import { Stack, Typography } from '@mui/material'
+import { useSnackbar } from 'notistack'
 
 export default function SignUp() {
   const [pendingSignup, setPendingSignup] = useState(false)
   const [errors, setErrors] = useState<{ field: string; message: string }[] | undefined>()
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
   const handleSignup = (fields: SignupFields) => {
     setErrors(undefined)
     setPendingSignup(true)
@@ -26,9 +24,12 @@ export default function SignUp() {
           router.push('/home')
           return
         }
-        // if (error.kind === 'network') {
-        //   showAuthError('couldNotCheck')
-        // }
+        if (error.kind === 'network') {
+          enqueueSnackbar(
+            'Could not create the account due to a network error. Check your connection and try again.',
+            { variant: 'error' }
+          )
+        }
         if (error.isValidationError()) {
           setErrors(error.response.errors)
         }
