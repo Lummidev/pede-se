@@ -14,7 +14,6 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Alert from '@mui/material/Alert'
-import Stack from '@mui/material/Stack'
 import AlertTitle from '@mui/material/AlertTitle'
 import useStoreInfo from '@/hooks/useStoreInfo'
 export default function Page() {
@@ -73,9 +72,7 @@ function Products({
 }) {
   return (
     <>
-      <Typography variant="h4">
-        {info.storeName}'s Products ({metadata.total})
-      </Typography>
+      <Typography variant="h4">{`${info.storeName}'s Products ${metadata.total}`}</Typography>
       <ProductsTable products={products ?? []} />
     </>
   )

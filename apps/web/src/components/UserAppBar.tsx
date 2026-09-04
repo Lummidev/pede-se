@@ -41,20 +41,6 @@ export default function UserAppBar() {
   )
 }
 
-const logout = () => {
-  apiClient.api.profile.accessTokens
-    .destroy({})
-    .safe()
-    .then(([data, error]) => {
-      if (data) return
-      if (error.kind === 'network') {
-        console.error('Could not log out because of a network error')
-      }
-      if (error.isStatus(422)) {
-      }
-    })
-}
-
 function UserMenu() {
   const router = useRouter()
   const logout = () => {

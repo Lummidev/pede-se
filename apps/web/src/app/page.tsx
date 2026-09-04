@@ -21,7 +21,7 @@ const getErrorDetails = (error: TuyauError) => {
 }
 export default function LoginPage() {
   const [pendingLogin, setPendingLogin] = useState(false)
-  const [checkingLogin, setCheckingLogin] = useState(false)
+  const [checkingLogin, setCheckingLogin] = useState(true)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [showError, setShowError] = useState(false)
@@ -77,11 +77,10 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    setCheckingLogin(true)
     checkAuth().then(({ result, errorData }) => {
       switch (result) {
         case AuthCheck.Authenticated:
-          router.push('/home')
+          router.replace('/home')
           return
         case AuthCheck.Unauthorized:
           break
@@ -106,7 +105,7 @@ export default function LoginPage() {
       }
       setCheckingLogin(false)
     })
-  }, [])
+  }, [router, enqueueSnackbar])
 
   return (
     <>

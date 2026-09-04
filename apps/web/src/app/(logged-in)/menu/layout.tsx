@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
-import { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Typography from '@mui/material/Typography'
 export default function LoggedInLayout({
