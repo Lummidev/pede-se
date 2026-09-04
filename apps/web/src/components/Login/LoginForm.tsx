@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -38,7 +37,7 @@ export function LoginForm({
       }}
     >
       <TextField disabled={disableInputs} label="Email" name="email" />
-      <TextField disabled={disableInputs} label="Password" name="password" />
+      <TextField disabled={disableInputs} label="Password" name="password" type="password" />
       <Button
         loading={pendingLogin}
         disabled={disabled}

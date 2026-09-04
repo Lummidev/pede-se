@@ -1,9 +1,6 @@
-import TextField from '@mui/material/TextField'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Link from 'next/link'
-import Container from '@mui/material/Container'
 import { TextFieldWithErrors } from '../TextFieldWithError'
 export interface SignupFields {
   name: string
@@ -74,6 +71,7 @@ export function SignupForm({
         textFieldProps={{
           disabled: disableInputs,
           label: 'Password',
+          type: 'password',
         }}
         name="password"
         errors={errorsByField}
@@ -82,6 +80,7 @@ export function SignupForm({
         textFieldProps={{
           disabled: disableInputs,
           label: 'Password Confirmation',
+          type: 'password',
         }}
         name="passwordConfirmation"
         errors={errorsByField}
