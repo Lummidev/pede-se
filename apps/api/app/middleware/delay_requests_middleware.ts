@@ -1,4 +1,4 @@
-import devSettings from '#config/devSettings'
+import devSettings from '#config/dev_settings'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
