@@ -31,8 +31,8 @@ export default function LoggedInLayout({
       <TabContext value={pathname}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="Menu page tabs">
+            <Tab label="Products" value="/menu" />
             <Tab label="Categories" value="/menu/categories" />
-            <Tab label="Products" value="/menu/products" />
           </TabList>
         </Box>
       </TabContext>
