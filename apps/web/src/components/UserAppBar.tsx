@@ -128,6 +128,7 @@ function MobileMenu() {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
+    return true
   }
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
@@ -166,9 +167,9 @@ function MobileMenu() {
         {pages.map((page) => (
           <MenuItem
             key={page.displayName}
-            onClick={handleCloseNavMenu}
             href={page.href}
             LinkComponent={Link}
+            onClick={handleCloseNavMenu}
           >
             <Typography sx={{ textAlign: 'center' }}>{page.displayName}</Typography>
           </MenuItem>
@@ -187,7 +188,7 @@ function WideScreenMenu() {
           key={page.displayName}
           href={page.href}
           LinkComponent={Link}
-          sx={{ my: 2, color: 'white', display: 'block' }}
+          sx={{ my: 2, color: 'white', display: 'flex' }}
         >
           {page.displayName}
         </Button>
