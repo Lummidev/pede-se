@@ -17,7 +17,13 @@ export default function useProductPage(page: { page: number }) {
       if (staleData) {
         const filteredProducts = staleData.data.filter((product) => product.id !== response.data.id)
         return [
-          { data: [response.data, ...filteredProducts], metadata: staleData.metadata },
+          {
+            data: [response.data, ...filteredProducts],
+            metadata: {
+              ...staleData.metadata,
+              total: (Number(staleData.metadata.total) + 1).toString(),
+            },
+          },
           staleError,
         ]
       } else {
@@ -37,7 +43,16 @@ export default function useProductPage(page: { page: number }) {
       const [staleData, staleError] = staleState
       if (staleData) {
         const filteredProducts = staleData.data.filter((product) => product.id !== id)
-        return [{ data: filteredProducts, metadata: staleData.metadata }, staleError]
+        return [
+          {
+            data: filteredProducts,
+            metadata: {
+              ...staleData.metadata,
+              total: (Number(staleData.metadata.total) - 1).toString(),
+            },
+          },
+          staleError,
+        ]
       } else {
         return [staleData, staleError]
       }
