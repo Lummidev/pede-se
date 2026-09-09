@@ -17,6 +17,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { apiClient } from '@/lib/apiClient'
 import { clearAuthToken } from '@/lib/auth'
+import { useSnackbar } from 'notistack'
 const pages: { displayName: string; href: string }[] = [
   { displayName: 'Menu', href: '/menu' },
   { displayName: 'Orders', href: '/orders' },
@@ -42,6 +43,7 @@ export default function UserAppBar() {
 }
 
 function UserMenu() {
+  const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
   const logout = () => {
     apiClient.api.profile.accessTokens
@@ -54,11 +56,17 @@ function UserMenu() {
           return
         }
         if (error.kind === 'network') {
-          console.error('Could not log out because of a network error')
+          enqueueSnackbar({
+            message: 'Could not log out because of a network error',
+            variant: 'error',
+          })
+          return
         }
-        if (error.isStatus(422)) {
-          console.error('Not logged in')
+        if (error.isStatus(401)) {
+          enqueueSnackbar({ message: 'Not logged in', variant: 'error' })
+          return
         }
+        enqueueSnackbar({ message: `Could not logout: ${error.message}`, variant: 'error' })
       })
   }
   const userMenuItems: { id: number; display: string; onClick: () => void }[] = [
