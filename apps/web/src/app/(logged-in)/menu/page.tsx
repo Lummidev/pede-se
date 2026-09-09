@@ -14,17 +14,29 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Alert from '@mui/material/Alert'
+import Stack from '@mui/material/Stack'
 import AlertTitle from '@mui/material/AlertTitle'
+import AddIcon from '@mui/icons-material/Add'
 import useStoreInfo from '@/hooks/useStoreInfo'
+import Drawer from '@mui/material/Drawer'
+import { ProductFields, ProductForm } from '@/components/Menu/ProductForm'
+import { useState } from 'react'
+import { apiClient } from '@/lib/apiClient'
+import type { Route } from '@tuyau/core/types'
+import { useSnackbar } from 'notistack'
 export default function Page() {
   const {
     products,
     metadata,
     error: productPageError,
     isLoading: isLoadingProducts,
+    mutate,
   } = useProductPage({ page: 1 })
   const { info, isLoading: isLoadingInfo, error: infoError } = useStoreInfo()
   const showSkeleton = isLoadingInfo || isLoadingProducts || !!infoError || !!productPageError
+  const onNewProduct = (product: Route.Response<'products.store'>) => {
+    mutate.addProduct(product)
+  }
   return (
     <Box>
       {productPageError ? (
@@ -43,7 +55,12 @@ export default function Page() {
       {showSkeleton ? (
         <PageSkeleton />
       ) : (
-        <Products products={products!} metadata={metadata!} info={info!} />
+        <Products
+          products={products!}
+          metadata={metadata!}
+          info={info!}
+          onNewProduct={onNewProduct}
+        />
       )}
     </Box>
   )
@@ -60,6 +77,7 @@ function Products({
   products,
   metadata,
   info,
+  onNewProduct,
 }: {
   products: {
     id: string
@@ -69,11 +87,44 @@ function Products({
   }[]
   metadata: { total: string }
   info: { storeName: string }
+  onNewProduct: (response: Route.Response<'products.store'>) => unknown
 }) {
+  const [showNewProductDrawer, setShowNewProductDrawer] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
+  const onProduct = (response: Route.Response<'products.store'>) => {
+    enqueueSnackbar({ message: 'Product created successfully', variant: 'success' })
+    setShowNewProductDrawer(false)
+    onNewProduct(response)
+  }
   return (
     <>
-      <Typography variant="h4">{`${info.storeName}'s Products (${metadata.total})`}</Typography>
+      <Stack
+        direction={'row'}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="h4">{`${info.storeName}'s Products (${metadata.total})`}</Typography>
+        <Button
+          startIcon={<AddIcon />}
+          variant="contained"
+          onClick={() => {
+            setShowNewProductDrawer(true)
+          }}
+          disabled={showNewProductDrawer}
+        >
+          New product
+        </Button>
+      </Stack>
       <ProductsTable products={products ?? []} />
+      <ProductDrawer
+        open={showNewProductDrawer}
+        onClose={() => {
+          setShowNewProductDrawer(false)
+        }}
+        onProduct={onProduct}
+      />
     </>
   )
 }
@@ -182,3 +233,60 @@ const currencyFormat = new Intl.NumberFormat(undefined, {
   currencyDisplay: 'symbol',
   style: 'currency',
 })
+
+const ProductDrawer = ({
+  open,
+  onClose,
+  onProduct,
+}: {
+  open: boolean
+  onClose: () => unknown
+  onProduct: (product: Route.Response<'products.store'>) => unknown
+}) => {
+  const [pendingNewProduct, setPendingNewProduct] = useState(false)
+  const [errors, setErrors] = useState<{ field: string; message: string }[] | undefined>()
+  const { enqueueSnackbar } = useSnackbar()
+  const handleNewProduct = (fields: ProductFields) => {
+    setPendingNewProduct(true)
+    setErrors(undefined)
+    apiClient.api.products
+      .store({ body: fields })
+      .safe()
+      .then(([data, error]) => {
+        setPendingNewProduct(false)
+        if (data) {
+          onProduct(data)
+          return
+        }
+        if (error.isValidationError()) {
+          setErrors(error.response.errors)
+          return
+        }
+        if (error.kind === 'network') {
+          enqueueSnackbar({
+            message:
+              'A network error happened while trying to create the product. Check your connection and try again.',
+            variant: 'error',
+          })
+        }
+      })
+  }
+  return (
+    <Drawer open={open} onClose={onClose} anchor="right">
+      <Stack
+        spacing={2}
+        sx={{
+          padding: '2em',
+        }}
+      >
+        <Typography variant="h4">Create Product</Typography>
+        <ProductForm
+          onSubmit={handleNewProduct}
+          pending={pendingNewProduct}
+          onCancel={onClose}
+          errors={errors}
+        />
+      </Stack>
+    </Drawer>
+  )
+}

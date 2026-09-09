@@ -2,6 +2,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Link from 'next/link'
 import { TextFieldWithErrors } from '../TextFieldWithError'
+import { groupErrorMessages } from '@/lib/util/formErrors'
 export interface SignupFields {
   name: string
   phoneNumber: string
@@ -33,7 +34,7 @@ export function SignupForm({
 }) {
   const disableInputs = pendingSignup || disabled
 
-  const errorsByField = !errors ? {} : Object.groupBy(errors, (error) => error.field)
+  const errorsByField = errors && groupErrorMessages(errors)
   return (
     <Stack
       component="form"
@@ -46,44 +47,35 @@ export function SignupForm({
     >
       <TextFieldWithErrors
         name="name"
-        errors={errorsByField}
-        textFieldProps={{
-          disabled: disableInputs,
-          label: 'Name',
-        }}
+        validationErrors={errorsByField?.name}
+        disabled={disableInputs}
+        label="Name"
       />
       <TextFieldWithErrors
-        textFieldProps={{
-          disabled: disableInputs,
-          label: 'Phone Number',
-        }}
+        disabled={disableInputs}
+        label="Phone number"
         name="phoneNumber"
+        validationErrors={errorsByField?.phoneNumber}
       />
       <TextFieldWithErrors
-        textFieldProps={{
-          disabled: disableInputs,
-          label: 'Email',
-        }}
+        disabled={disableInputs}
+        label="Email"
         name="email"
-        errors={errorsByField}
+        validationErrors={errorsByField?.email}
       />
       <TextFieldWithErrors
-        textFieldProps={{
-          disabled: disableInputs,
-          label: 'Password',
-          type: 'password',
-        }}
+        disabled={disableInputs}
+        label="Password"
+        type="password"
         name="password"
-        errors={errorsByField}
+        validationErrors={errorsByField?.password}
       />
       <TextFieldWithErrors
-        textFieldProps={{
-          disabled: disableInputs,
-          label: 'Password Confirmation',
-          type: 'password',
-        }}
+        disabled={disableInputs}
+        label="Password Confirmation"
+        type="password"
         name="passwordConfirmation"
-        errors={errorsByField}
+        validationErrors={errorsByField?.passwordConfirmation}
       />
 
       <Button
