@@ -37,6 +37,9 @@ export default function Page() {
   const onNewProduct = (product: Route.Response<'products.store'>) => {
     mutate.addProduct(product)
   }
+  const onDeleteProduct = (id: string) => {
+    mutate.deleteProduct(id)
+  }
   return (
     <Box>
       {productPageError ? (
@@ -60,6 +63,7 @@ export default function Page() {
           metadata={metadata!}
           info={info!}
           onNewProduct={onNewProduct}
+          onDelete={onDeleteProduct}
         />
       )}
     </Box>
@@ -78,6 +82,7 @@ function Products({
   metadata,
   info,
   onNewProduct,
+  onDelete,
 }: {
   products: {
     id: string
@@ -88,13 +93,41 @@ function Products({
   metadata: { total: string }
   info: { storeName: string }
   onNewProduct: (response: Route.Response<'products.store'>) => unknown
+  onDelete: (id: string) => unknown
 }) {
   const [showNewProductDrawer, setShowNewProductDrawer] = useState(false)
+  const [disableTableActions, setDisableTableActions] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
   const onProduct = (response: Route.Response<'products.store'>) => {
     enqueueSnackbar({ message: 'Product created successfully', variant: 'success' })
     setShowNewProductDrawer(false)
     onNewProduct(response)
+  }
+  const onDeleteClick = (id: string) => {
+    setDisableTableActions(true)
+    // TODO: show confirmation before deletion
+    apiClient.api.products
+      .destroy({ params: { id } })
+      .safe()
+      .then(([, error]) => {
+        if (error) {
+          if (error.kind === 'network') {
+            enqueueSnackbar({
+              message:
+                'Could not delete the product because of a network error. Check your connection and try again.',
+              variant: 'error',
+            })
+            return
+          }
+          enqueueSnackbar({
+            variant: 'error',
+            message: `Could not delete the product: ${error?.message}`,
+          })
+        } else {
+          onDelete(id)
+        }
+      })
+      .finally(() => setDisableTableActions(false))
   }
   return (
     <>
@@ -117,7 +150,11 @@ function Products({
           New product
         </Button>
       </Stack>
-      <ProductsTable products={products ?? []} />
+      <ProductsTable
+        products={products ?? []}
+        onDeleteClick={onDeleteClick}
+        disableActions={disableTableActions}
+      />
       <ProductDrawer
         open={showNewProductDrawer}
         onClose={() => {
@@ -130,6 +167,8 @@ function Products({
 }
 function ProductsTable({
   products,
+  onDeleteClick,
+  disableActions,
 }: {
   products: {
     id: string
@@ -137,6 +176,8 @@ function ProductsTable({
     description: string | null
     priceCents: number
   }[]
+  onDeleteClick: (id: string) => unknown
+  disableActions: boolean
 }) {
   return (
     <TableContainer component={Box}>
@@ -164,10 +205,21 @@ function ProductsTable({
               <TableCell>{product.description}</TableCell>
               <TableCell>{currencyFormat.format(product.priceCents / 100)}</TableCell>
               <TableCell width={'10%'}>
-                <Button fullWidth color="primary" startIcon={<EditIcon />}>
+                <Button
+                  disabled={disableActions}
+                  fullWidth
+                  color="primary"
+                  startIcon={<EditIcon />}
+                >
                   Edit
                 </Button>
-                <Button fullWidth color="error" startIcon={<DeleteIcon />}>
+                <Button
+                  disabled={disableActions}
+                  fullWidth
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => onDeleteClick(product.id)}
+                >
                   Delete
                 </Button>
               </TableCell>
