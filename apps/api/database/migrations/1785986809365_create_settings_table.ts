@@ -14,12 +14,6 @@ export default class extends BaseSchema {
       table.timestamp('updated_at')
       table.check('?? = ??', ['id', 1])
     })
-    this.defer(async (db) => {
-      await db.table(this.tableName).insert({
-        store_name: 'Pede-se Store',
-        currency: 'BRL',
-      })
-    })
   }
 
   async down() {
