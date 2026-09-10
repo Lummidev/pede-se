@@ -19,7 +19,7 @@ export class AuthAccessTokenSchema extends BaseModel {
   @column()
   declare hash: string
   @column({ isPrimary: true })
-  declare id: string
+  declare id: number
   @column.dateTime()
   declare lastUsedAt: DateTime | null
   @column()
@@ -38,7 +38,7 @@ export class OrderProductSchema extends BaseModel {
   @column()
   declare amount: number
   @column({ isPrimary: true })
-  declare id: string
+  declare id: number
   @column()
   declare orderId: string
   @column()

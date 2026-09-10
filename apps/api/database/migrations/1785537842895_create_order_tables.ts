@@ -6,13 +6,13 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.orderTableName, (table) => {
-      table.uuid('id').primary().notNullable().defaultTo(this.raw('uuidv4()'))
+      table.uuid('id').primary().notNullable()
       table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })
     this.schema.createTable(this.pivotTableName, (table) => {
-      table.uuid('id').primary().notNullable().defaultTo(this.raw('uuidv4()'))
+      table.increments('id').primary().notNullable()
       table
         .uuid('order_id')
         .notNullable()
