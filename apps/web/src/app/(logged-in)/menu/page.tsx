@@ -18,12 +18,13 @@ import Stack from '@mui/material/Stack'
 import AlertTitle from '@mui/material/AlertTitle'
 import AddIcon from '@mui/icons-material/Add'
 import useStoreInfo from '@/hooks/useStoreInfo'
-import Drawer from '@mui/material/Drawer'
-import { ProductFields, ProductForm } from '@/components/Menu/ProductForm'
 import { useState } from 'react'
 import { apiClient } from '@/lib/apiClient'
 import type { Route } from '@tuyau/core/types'
 import { useSnackbar } from 'notistack'
+import { NewProductDrawer } from '@/components/Menu/NewProductDrawer'
+import { UpdateProductDrawer } from '@/components/Menu/UpdateProductDrawer'
+import { ProductFields } from '@/components/Menu/ProductForm'
 export default function Page() {
   const {
     products,
@@ -36,6 +37,9 @@ export default function Page() {
   const showSkeleton = isLoadingInfo || isLoadingProducts || !!infoError || !!productPageError
   const onNewProduct = (product: Route.Response<'products.store'>) => {
     mutate.addProduct(product)
+  }
+  const onUpdateProduct = (product: Route.Response<'products.store'>) => {
+    mutate.updateProduct(product)
   }
   const onDeleteProduct = (id: string) => {
     mutate.deleteProduct(id)
@@ -64,6 +68,7 @@ export default function Page() {
           info={info!}
           onNewProduct={onNewProduct}
           onDelete={onDeleteProduct}
+          onUpdateProduct={onUpdateProduct}
         />
       )}
     </Box>
@@ -83,25 +88,37 @@ function Products({
   info,
   onNewProduct,
   onDelete,
+  onUpdateProduct,
 }: {
   products: {
     id: string
     name: string
-    description: string | null
+    description?: string | null
     priceCents: number
   }[]
   metadata: { total: string }
   info: { storeName: string }
   onNewProduct: (response: Route.Response<'products.store'>) => unknown
+  onUpdateProduct: (response: Route.Response<'products.store'>) => unknown
+
   onDelete: (id: string) => unknown
 }) {
   const [showNewProductDrawer, setShowNewProductDrawer] = useState(false)
+  const [showUpdateProductDrawer, setShowUpdateProductDrawer] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<
+    ({ id: string } & ProductFields) | undefined
+  >()
   const [disableTableActions, setDisableTableActions] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
-  const onProduct = (response: Route.Response<'products.store'>) => {
+  const handleNewProduct = (response: Route.Response<'products.store'>) => {
     enqueueSnackbar({ message: 'Product created successfully', variant: 'success' })
     setShowNewProductDrawer(false)
     onNewProduct(response)
+  }
+  const handleProductUpdate = (response: Route.Response<'products.update'>) => {
+    enqueueSnackbar({ message: 'Product updated successfully', variant: 'success' })
+    setShowUpdateProductDrawer(false)
+    onUpdateProduct(response)
   }
   const onDeleteClick = (id: string) => {
     setDisableTableActions(true)
@@ -114,7 +131,7 @@ function Products({
           if (error.kind === 'network') {
             enqueueSnackbar({
               message:
-                'Could not delete the product because of a network error. Check your connection and try again.',
+                'Could not delete the product due to a network error. Check your connection and try again.',
               variant: 'error',
             })
             return
@@ -128,6 +145,10 @@ function Products({
         }
       })
       .finally(() => setDisableTableActions(false))
+  }
+  const onUpdateClick = (product: { id: string } & ProductFields) => {
+    setEditingProduct(product)
+    setShowUpdateProductDrawer(true)
   }
   return (
     <>
@@ -153,14 +174,23 @@ function Products({
       <ProductsTable
         products={products ?? []}
         onDeleteClick={onDeleteClick}
+        onUpdateClick={onUpdateClick}
         disableActions={disableTableActions}
       />
-      <ProductDrawer
+      <NewProductDrawer
         open={showNewProductDrawer}
         onClose={() => {
           setShowNewProductDrawer(false)
         }}
-        onProduct={onProduct}
+        onProductCreation={handleNewProduct}
+      />
+      <UpdateProductDrawer
+        open={showUpdateProductDrawer}
+        onClose={() => {
+          setShowUpdateProductDrawer(false)
+        }}
+        product={editingProduct}
+        onProductUpdate={handleProductUpdate}
       />
     </>
   )
@@ -168,15 +198,17 @@ function Products({
 function ProductsTable({
   products,
   onDeleteClick,
+  onUpdateClick,
   disableActions,
 }: {
   products: {
     id: string
     name: string
-    description: string | null
+    description?: string | null
     priceCents: number
   }[]
   onDeleteClick: (id: string) => unknown
+  onUpdateClick: (product: { id: string } & ProductFields) => unknown
   disableActions: boolean
 }) {
   return (
@@ -210,6 +242,7 @@ function ProductsTable({
                   fullWidth
                   color="primary"
                   startIcon={<EditIcon />}
+                  onClick={() => onUpdateClick(product)}
                 >
                   Edit
                 </Button>
@@ -285,60 +318,3 @@ const currencyFormat = new Intl.NumberFormat(undefined, {
   currencyDisplay: 'symbol',
   style: 'currency',
 })
-
-const ProductDrawer = ({
-  open,
-  onClose,
-  onProduct,
-}: {
-  open: boolean
-  onClose: () => unknown
-  onProduct: (product: Route.Response<'products.store'>) => unknown
-}) => {
-  const [pendingNewProduct, setPendingNewProduct] = useState(false)
-  const [errors, setErrors] = useState<{ field: string; message: string }[] | undefined>()
-  const { enqueueSnackbar } = useSnackbar()
-  const handleNewProduct = (fields: ProductFields) => {
-    setPendingNewProduct(true)
-    setErrors(undefined)
-    apiClient.api.products
-      .store({ body: fields })
-      .safe()
-      .then(([data, error]) => {
-        setPendingNewProduct(false)
-        if (data) {
-          onProduct(data)
-          return
-        }
-        if (error.isValidationError()) {
-          setErrors(error.response.errors)
-          return
-        }
-        if (error.kind === 'network') {
-          enqueueSnackbar({
-            message:
-              'A network error happened while trying to create the product. Check your connection and try again.',
-            variant: 'error',
-          })
-        }
-      })
-  }
-  return (
-    <Drawer open={open} onClose={onClose} anchor="right">
-      <Stack
-        spacing={2}
-        sx={{
-          padding: '2em',
-        }}
-      >
-        <Typography variant="h4">Create Product</Typography>
-        <ProductForm
-          onSubmit={handleNewProduct}
-          pending={pendingNewProduct}
-          onCancel={onClose}
-          errors={errors}
-        />
-      </Stack>
-    </Drawer>
-  )
-}

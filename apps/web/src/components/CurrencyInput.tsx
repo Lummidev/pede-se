@@ -10,10 +10,11 @@ const formatter = new Intl.NumberFormat(undefined, {
 export const CurrencyInput = (
   props: {
     name: string
-  } & Omit<TextFieldProps, 'name' | 'value'>
+    defaultValue?: number
+  } & Omit<TextFieldProps, 'name' | 'value' | 'defaultValue'>
 ) => {
-  const { name, disabled, label, slotProps, onKeyDown, ...rest } = props
-  const [cents, setCents] = useState(0)
+  const { name, disabled, label, slotProps, onKeyDown, defaultValue, ...rest } = props
+  const [cents, setCents] = useState(defaultValue ?? 0)
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === 'Backspace') {
       setCents((prev) => Math.floor(prev / 10))

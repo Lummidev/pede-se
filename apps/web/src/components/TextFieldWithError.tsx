@@ -5,15 +5,31 @@ export function TextFieldWithErrors(
   props: {
     name: string
     validationErrors?: string[]
-    inputType?: 'text' | 'currency'
-  } & Omit<TextFieldProps, 'error' | 'helperText' | 'name'>
+  } & (
+    { inputType?: 'text'; defaultValue?: string } | { inputType: 'currency'; defaultValue?: number }
+  ) &
+    Omit<TextFieldProps, 'error' | 'helperText' | 'name' | 'defaultValue'>
 ) {
-  const { validationErrors, name, inputType = 'text', ...rest } = props
+  const { validationErrors, name, inputType, defaultValue, ...rest } = props
   const helperText = validationErrors?.join(' ')
   if (inputType === 'currency') {
     return (
-      <CurrencyInput name={name} error={!!validationErrors} helperText={helperText} {...rest} />
+      <CurrencyInput
+        name={name}
+        defaultValue={defaultValue}
+        error={!!validationErrors}
+        helperText={helperText}
+        {...rest}
+      />
     )
   }
-  return <TextField name={name} error={!!validationErrors} helperText={helperText} {...rest} />
+  return (
+    <TextField
+      name={name}
+      defaultValue={defaultValue}
+      error={!!validationErrors}
+      helperText={helperText}
+      {...rest}
+    />
+  )
 }

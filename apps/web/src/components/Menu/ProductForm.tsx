@@ -6,7 +6,7 @@ import { groupErrorMessages } from '@/lib/util/formErrors'
 
 export interface ProductFields {
   name: string
-  description?: string
+  description?: string | null
   priceCents: number
 }
 const getFields = (formData: FormData) => {
@@ -23,11 +23,15 @@ export const ProductForm = ({
   onCancel,
   pending,
   errors,
+  primaryActionLabel,
+  defaultValues,
 }: {
   onSubmit: (data: ProductFields) => unknown
   onCancel: () => unknown
   pending: boolean
   errors?: { field: string; message: string }[]
+  primaryActionLabel: string
+  defaultValues?: ProductFields
 }) => {
   const validationErrors = errors && groupErrorMessages(errors)
   return (
@@ -45,6 +49,7 @@ export const ProductForm = ({
           label="Name"
           disabled={pending}
           name="name"
+          defaultValue={defaultValues?.name}
           validationErrors={validationErrors?.name}
         />
         <TextFieldWithErrors
@@ -53,6 +58,7 @@ export const ProductForm = ({
           label="Description"
           name="description"
           minRows={3}
+          defaultValue={defaultValues?.description ?? undefined}
           validationErrors={validationErrors?.description}
         />
         <TextFieldWithErrors
@@ -60,6 +66,7 @@ export const ProductForm = ({
           disabled={pending}
           label="Price"
           name="price"
+          defaultValue={defaultValues?.priceCents}
           validationErrors={validationErrors?.priceCents}
         />
         <Stack direction={'row'} spacing={1}>
@@ -67,7 +74,7 @@ export const ProductForm = ({
             Cancel
           </Button>
           <Button fullWidth variant="contained" loading={pending} type="submit">
-            Create
+            {primaryActionLabel}
           </Button>
         </Stack>
       </Stack>
