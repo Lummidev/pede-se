@@ -20,7 +20,7 @@ export default function SignUp() {
       .safe()
       .then(([data, error]) => {
         if (data) {
-          localStorage.setItem('token', data.data.token)
+          localStorage.setItem('auth:token', data.data.token)
           router.push('/home')
           return
         }

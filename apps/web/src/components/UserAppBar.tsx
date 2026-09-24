@@ -2,7 +2,7 @@
 import AppBar from '@mui/material/AppBar'
 import Container from '@mui/material/Container'
 import Toolbar from '@mui/material/Toolbar'
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, useEffect } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -12,12 +12,12 @@ import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import Avatar from '@mui/material/Avatar'
+import Chip from '@mui/material/Chip'
 import MenuBook from '@mui/icons-material/MenuBook'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { apiClient } from '@/lib/apiClient'
-import { clearAuthToken } from '@/lib/auth'
 import { useSnackbar } from 'notistack'
+import { Auth, AuthResult } from '@/lib/auth'
 const pages: { displayName: string; href: string }[] = [
   { displayName: 'Menu', href: '/menu' },
   { displayName: 'Orders', href: '/orders' },
@@ -35,6 +35,9 @@ export default function UserAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             <WideScreenMenu />
           </Box>
+          <Box sx={{ mx: 1 }}>
+            <SpecialRoleDisplay />
+          </Box>
           <UserMenu />
         </Toolbar>
       </Container>
@@ -46,28 +49,30 @@ function UserMenu() {
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
   const logout = () => {
-    apiClient.api.profile.accessTokens
-      .destroy({})
-      .safe()
-      .then(([data, error]) => {
-        if (data) {
-          clearAuthToken()
+    const showErrorMessage = (message: string) => {
+      enqueueSnackbar({ message, variant: 'error' })
+    }
+    Auth.logout().then((result) => {
+      switch (result) {
+        case AuthResult.Success:
           router.push('/')
           return
-        }
-        if (error.kind === 'network') {
-          enqueueSnackbar({
-            message: 'Could not log out because of a network error',
-            variant: 'error',
-          })
+        case AuthResult.NetworkError:
+          showErrorMessage('Could not log out because of a network error')
           return
-        }
-        if (error.isStatus(401)) {
-          enqueueSnackbar({ message: 'Not logged in', variant: 'error' })
+        case AuthResult.InvalidToken:
+          router.push('/')
+          showErrorMessage('Already logged out')
           return
-        }
-        enqueueSnackbar({ message: `Could not logout: ${error.message}`, variant: 'error' })
-      })
+        case AuthResult.Unauthorized:
+          showErrorMessage('Not logged in')
+          router.push('/')
+          return
+        default:
+          showErrorMessage('Could not logout')
+          return
+      }
+    })
   }
   const userMenuItems: { id: number; display: string; onClick: () => void }[] = [
     {
@@ -234,4 +239,18 @@ function Logo({ variant }: { variant?: 'widescreen' | 'mobile' }) {
       </Typography>
     </Box>
   )
+}
+
+function SpecialRoleDisplay() {
+  const [roleText, setRoleText] = useState<string | undefined>()
+  useEffect(() => {
+    // Because Auth reads from localStorage, this should be done in an useEffect.
+    const roleText = Auth.isAdmin ? 'Admin' : Auth.isOperator ? 'Operator' : undefined
+    // However, all solutions that I saw for the error below made this operation too complex and/or unreadable.
+    // Checking for `typeof window === 'undefined'` in useState(()=>{}) causes a hydration error.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRoleText(roleText)
+  }, [])
+
+  return roleText ? <Chip label={roleText} color="warning" /> : <></>
 }

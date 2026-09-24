@@ -1,105 +1,67 @@
 'use client'
 import { LoginFields, LoginForm } from '@/components/Login/LoginForm'
 import { LoginInfo } from '@/components/Login/LoginInfo'
-import { apiClient } from '@/lib/apiClient'
-import { AuthCheck, checkAuth } from '@/lib/auth'
+import { AuthResult, Auth } from '@/lib/auth'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import Paper from '@mui/material/Paper'
-import { DialogContent, DialogContentText, Typography } from '@mui/material'
-import { TuyauError } from '@tuyau/core/client'
-const getErrorDetails = (error: TuyauError) => {
-  const { name, kind, message, cause } = error
-  return JSON.stringify({ name, kind, message, cause }, undefined, ' ')
-}
+
 export default function LoginPage() {
   const [pendingLogin, setPendingLogin] = useState(false)
   const [checkingLogin, setCheckingLogin] = useState(true)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const [showError, setShowError] = useState(false)
-  const [errorDetails, setErrorDetails] = useState<string | undefined>()
-  const showErrorAction = () => {
-    return (
-      <Button
-        onClick={() => {
-          setShowError(true)
-        }}
-        color="inherit"
-      >
-        Show Details
-      </Button>
-    )
-  }
+
   const handleLogin = (fields: LoginFields) => {
-    setErrorDetails(undefined)
-    const loginData = {
-      body: fields,
-    }
     setPendingLogin(true)
-    apiClient.api.auth.accessTokens
-      .store(loginData)
-      .safe()
-      .then(([data, error]) => {
-        if (data) {
-          localStorage.setItem('token', data.data.token)
+    Auth.login(fields).then((result) => {
+      setPendingLogin(false)
+      switch (result) {
+        case AuthResult.Success:
           router.push('/home')
           return
-        }
-        if (error.isValidationError() || error.isStatus(400)) {
+        case AuthResult.InvalidCredentials:
           enqueueSnackbar(authFailMessages.invalidCredentials.message, {
             variant: authFailMessages.invalidCredentials.severity,
           })
-          return
-        }
-        if (error.kind === 'network') {
+          break
+        case AuthResult.NetworkError:
           enqueueSnackbar(authFailMessages.networkError.message, {
             variant: authFailMessages.networkError.severity,
           })
-          return
-        }
-        setErrorDetails(getErrorDetails(error))
-        enqueueSnackbar(authFailMessages.unknownError.message, {
-          variant: authFailMessages.unknownError.severity,
-          action: showErrorAction,
-        })
-      })
-      .finally(() => {
-        setPendingLogin(false)
-      })
+          break
+        default:
+          enqueueSnackbar(authFailMessages.unknownError.message, {
+            variant: authFailMessages.unknownError.severity,
+          })
+      }
+    })
   }
 
   useEffect(() => {
-    checkAuth().then(({ result, errorData }) => {
+    Auth.check().then((result) => {
       switch (result) {
-        case AuthCheck.Authenticated:
+        case AuthResult.Success:
           router.replace('/home')
           return
-        case AuthCheck.Unauthorized:
+        case AuthResult.Unauthorized:
           break
-        case AuthCheck.InvalidToken:
+        case AuthResult.InvalidToken:
           enqueueSnackbar(authFailMessages.invalidToken.message, {
             variant: authFailMessages.invalidToken.severity,
           })
           break
-        case AuthCheck.NetworkError:
-          setErrorDetails(JSON.stringify(errorData, undefined, ' '))
+        case AuthResult.NetworkError:
           enqueueSnackbar(authFailMessages.networkError.message, {
             variant: authFailMessages.networkError.severity,
           })
           break
-        case AuthCheck.UnknownError:
-          setErrorDetails(JSON.stringify(errorData, undefined, ' '))
+        case AuthResult.UnknownError:
           enqueueSnackbar(authFailMessages.unknownError.message, {
             variant: authFailMessages.unknownError.severity,
-            action: showErrorAction,
           })
           break
       }
@@ -109,11 +71,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <ErrorInfoDialog
-        open={showError}
-        errorDetails={errorDetails ?? ''}
-        onClose={() => setShowError(false)}
-      />
       <Container
         maxWidth={false}
         sx={{
@@ -179,16 +136,16 @@ const authFailMessages = {
     severity: 'error' as const,
   },
 }
-const ErrorInfoDialog = (props: { onClose: () => void; open: boolean; errorDetails: string }) => {
-  return (
-    <Dialog onClose={props.onClose} open={props.open}>
-      <DialogTitle>Authentication error</DialogTitle>
-      <DialogContent>
-        <DialogContentText>Error details:</DialogContentText>
-        <Paper sx={{ fontFamily: 'monospace', whiteSpace: 'pre', overflowX: 'auto', p: '1em' }}>
-          <Typography component={'code'}>{props.errorDetails}</Typography>
-        </Paper>
-      </DialogContent>
-    </Dialog>
-  )
-}
+// const ErrorInfoDialog = (props: { onClose: () => void; open: boolean; errorDetails: string }) => {
+//   return (
+//     <Dialog onClose={props.onClose} open={props.open}>
+//       <DialogTitle>Authentication error</DialogTitle>
+//       <DialogContent>
+//         <DialogContentText>Error details:</DialogContentText>
+//         <Paper sx={{ fontFamily: 'monospace', whiteSpace: 'pre', overflowX: 'auto', p: '1em' }}>
+//           <Typography component={'code'}>{props.errorDetails}</Typography>
+//         </Paper>
+//       </DialogContent>
+//     </Dialog>
+//   )
+// }
