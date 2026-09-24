@@ -8,6 +8,7 @@ export default class UserTransformer extends BaseTransformer<User> {
       'name',
       'email',
       'phoneNumber',
+      'role',
       'createdAt',
       'updatedAt',
     ])

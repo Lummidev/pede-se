@@ -75,6 +75,15 @@ export class ProductSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class RoleSchema extends BaseModel {
+  static $columns = ['id', 'name'] as const
+  $columns = RoleSchema.$columns
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: "admin" | "operator" | null
+}
+
 export class SettingSchema extends BaseModel {
   static $columns = ['contactInfo', 'createdAt', 'currency', 'id', 'storeName', 'updatedAt', 'welcomeMessage'] as const
   $columns = SettingSchema.$columns
@@ -95,7 +104,7 @@ export class SettingSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'id', 'name', 'password', 'phoneNumber', 'updatedAt'] as const
+  static $columns = ['createdAt', 'email', 'id', 'name', 'password', 'phoneNumber', 'roleId', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -109,6 +118,8 @@ export class UserSchema extends BaseModel {
   declare password: string
   @column()
   declare phoneNumber: string
+  @column()
+  declare roleId: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

@@ -13,6 +13,7 @@
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
+    "resetdb": "node ace migration:reset && node ace migration:run && node ace db:seed -f ./database/seeders/00_start_seeder.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"

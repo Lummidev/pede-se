@@ -8,11 +8,20 @@ export default class AccessTokensController {
     const { email, password } = await request.validateUsing(loginValidator)
 
     const user = await User.verifyCredentials(email, password)
-    const token = await User.accessTokens.create(user)
-
+    await user.load('role')
+    let abilities: string[] | undefined
+    const role = user.role?.name
+    if (role) {
+      abilities = [role]
+    }
+    const token = await User.accessTokens.create(user, abilities)
     return serialize({
       user: UserTransformer.transform(user),
-      token: token.value!.release(),
+      token: {
+        value: token.value!.release(),
+        isAdmin: role === 'admin',
+        isOperator: role === 'operator',
+      },
     })
   }
 
