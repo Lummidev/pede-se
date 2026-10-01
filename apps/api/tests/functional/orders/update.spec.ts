@@ -143,7 +143,7 @@ test.group('Updating orders', (group) => {
         ],
       })
       .withGuard('api')
-      .loginAs(newUser)
+      .loginAs(newUser, [])
     response.assertNotFound()
     await assertNoModelChange(assert, Order, order)
     for (const orderProduct of orderProductsPivot) {

@@ -8,7 +8,7 @@ export default class NewAccountController {
     const { name, email, password, phoneNumber } = await request.validateUsing(signupValidator)
 
     const user = await User.create({ name, email, password, phoneNumber })
-    const token = await User.accessTokens.create(user)
+    const token = await User.accessTokens.create(user, [])
 
     return serialize({
       user: UserTransformer.transform(user),

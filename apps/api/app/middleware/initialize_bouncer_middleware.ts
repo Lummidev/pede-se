@@ -1,4 +1,4 @@
-// import * as abilities from '#abilities/main'
+import type * as abilities from '#abilities/main'
 import { policies } from '#generated/policies'
 
 import { Bouncer } from '@adonisjs/bouncer'
@@ -36,8 +36,7 @@ declare module '@adonisjs/core/http' {
   export interface HttpContext {
     bouncer: Bouncer<
       Exclude<HttpContext['auth']['user'], undefined>,
-      //typeof abilities,
-      undefined,
+      typeof abilities,
       typeof policies
     >
   }

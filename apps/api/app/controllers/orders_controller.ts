@@ -1,24 +1,27 @@
 import Order from '#models/order'
 import OrderPolicy from '#policies/order_policy'
+import { OrderService } from '#services/order_service'
 import OrderTransformer from '#transformers/order_transformer'
 import { OrderPagingQueryStringValidator, OrderValidator } from '#validators/order'
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
+@inject()
 export default class OrdersController {
-  async index({ serialize, request, auth }: HttpContext) {
+  constructor(protected orderService: OrderService) {}
+  async paginateUser({ serialize, request, auth }: HttpContext) {
     const qs = request.qs()
     const { page } = await OrderPagingQueryStringValidator.validate(qs)
     const user = auth.getUserOrFail()
-    const perPage = 20
-    const orders = await Order.query()
-      .where('userId', user.id)
-      .orderBy('created_at', 'desc')
-      .preload('products')
-      .preload('user')
-      .paginate(page ?? 1, perPage)
+    const orders = await this.orderService.paginate({ page: page ?? 1, userId: user.id })
     return serialize(OrderTransformer.paginate(orders.all(), orders.getMeta()))
   }
-
+  async paginateAll({ serialize, request }: HttpContext) {
+    const qs = request.qs()
+    const { page } = await OrderPagingQueryStringValidator.validate(qs)
+    const orders = await this.orderService.paginate({ page: page ?? 1 })
+    return serialize(OrderTransformer.paginate(orders.all(), orders.getMeta()))
+  }
   async store({ request, serialize, auth }: HttpContext) {
     const { products } = await request.validateUsing(OrderValidator)
     const { id: userId } = auth.getUserOrFail()
@@ -60,10 +63,8 @@ export default class OrdersController {
     return serialize(OrderTransformer.transform(order))
   }
 
-  async destroy({ params, bouncer }: HttpContext) {
+  async destroy({ params }: HttpContext) {
     const order = await Order.findOrFail(params.id)
-    await bouncer.with(OrderPolicy).authorize('delete', order)
-
     await order.delete()
   }
 }

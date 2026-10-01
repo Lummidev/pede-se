@@ -13,6 +13,13 @@ export interface ApiDefinition {
       store: typeof routes['auth.access_tokens.store']
     }
   }
+  products: {
+    index: typeof routes['products.index']
+    show: typeof routes['products.show']
+    store: typeof routes['products.store']
+    update: typeof routes['products.update']
+    destroy: typeof routes['products.destroy']
+  }
   profile: {
     profile: {
       show: typeof routes['profile.profile.show']
@@ -21,18 +28,12 @@ export interface ApiDefinition {
       destroy: typeof routes['profile.access_tokens.destroy']
     }
   }
-  products: {
-    index: typeof routes['products.index']
-    show: typeof routes['products.show']
-    store: typeof routes['products.store']
-    update: typeof routes['products.update']
-    destroy: typeof routes['products.destroy']
-  }
   orders: {
-    index: typeof routes['orders.index']
+    paginateUser: typeof routes['orders.paginate_user']
     show: typeof routes['orders.show']
     store: typeof routes['orders.store']
     update: typeof routes['orders.update']
+    paginateAll: typeof routes['orders.paginate_all']
     destroy: typeof routes['orders.destroy']
   }
 }

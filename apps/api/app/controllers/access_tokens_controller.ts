@@ -9,11 +9,12 @@ export default class AccessTokensController {
 
     const user = await User.verifyCredentials(email, password)
     await user.load('role')
-    let abilities: string[] | undefined
+    let abilities: string[] = []
     const role = user.role?.name
     if (role) {
       abilities = [role]
     }
+
     const token = await User.accessTokens.create(user, abilities)
     return serialize({
       user: UserTransformer.transform(user),
